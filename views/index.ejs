@@ -1,0 +1,105 @@
+<!DOCTYPE hmtl>
+
+<html>
+
+  <head>
+
+    <!-- ZingChart CDN script -->
+    <script src="https://cdn.zingchart.com/zingchart.min.js"></script>
+
+    <style>
+      #chart {
+        height: 300px;
+        width: 200px;
+      }
+    </style>
+
+  </head>
+
+  <body>
+
+    <h1>Personal Budget</h1>
+
+    <!-- EJS loop through personalbudget returned from MongoDB -->
+    <ul>
+
+      <!-- inserts each personalbudget name/age from MongoDB to list -->
+      <% personalbudget.forEach(personalbudget => { %>
+      <li><%= `Exptype: ${personalbudget.Exptype}, value: ${personalbudget.value}, color: ${personalbudget.color}` %></li>
+      <% }); %>
+
+    </ul>
+
+    <!-- chart container -->
+    <div id="chart"></div>
+
+    <!-- fetches data from api/data page & renders chart from data returned -->
+    <script>
+
+      // creates variable for url we want to fetch
+      const url = 'http://localhost:3000/api/data';
+
+      // fetch call to our /api/data page
+      fetch(url)
+
+        // creates promise to work with response from /api/data
+        .then(res => {
+
+          // throws error if there is a problem fetching page
+          if (!res.ok) {
+
+            // returns error with response text of error
+            throw new Error(res.statusText);
+
+          }
+
+          // returns data from /api/data page in json format to next promise
+          return res.json();
+
+        })
+
+        // creates promise with returned data from previous promise
+        .then(data => {
+
+          // creates personalbudget variable to store JSON data form /api/data
+          let personalbudget = data;
+
+          // creates empty personalbudgetInfo array
+          let personalbudgetInfo = [];
+
+          // loops through data from personalbudget variable
+          personalbudget.forEach(personalbudget => {
+
+            // pushes values from personalbudget variable to empty personalbudgetInfo array
+            personalbudgetInfo.push([personalbudget.name, parseInt(personalbudget.age)]);
+
+          });
+
+          // creates chart const with personalbudgetInfo array
+          const chart = {
+            type: 'bar',
+            series: [
+              {
+                values: personalbudgetInfo
+              }
+            ]
+          };
+
+          // renders zingchart to the page
+          zingchart.render({
+            id: 'chart',
+            data: chart,
+            height: '100%',
+            width: '100%'
+          });
+
+        })
+
+        // catches errors in promise chain
+        .catch(error => console.log('fetch error'));
+
+    </script>
+
+  </body>
+
+</html>
