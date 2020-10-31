@@ -117,7 +117,12 @@ app.post("/addMyBudget", (req, res) => {
       }
       console.log("SUCCESS adding new budget: ")
       return res.json(data);
+  }).catch((connectionError)=>{
+    console.log(connectionError)
+    return res.status(400).json({
+      errors: connectionError,
   });
+});;
 });
 // // creates GET request route for /personalbudget/add page and renders ejs template
 // app.get('/personalbudget/add', (req, res) => res.render('personalbudget/add'));
